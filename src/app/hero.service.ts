@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Hero } from './shared/hero';
 import { HEROES } from './mock-heroes';
+import { Observable, of } from 'rxjs';
 
 // The @Injectable() decorator marks the class as one that 
 // participates in the dependency injection system. 
@@ -39,7 +40,10 @@ export class HeroService {
  */
   constructor() { }
 
-  getHeroes(): Hero[] {
-    return HEROES;
+  getHeroes(): Observable<Hero[]> {
+    // Observables are used for asynchronous code. 
+    // For now, getHeroes is still returning a mocked data but later, we will make a http request to get the heroes list.
+    // of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
+    return of(HEROES);
   }
 }
