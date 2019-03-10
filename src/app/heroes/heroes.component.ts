@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Hero } from '../shared/hero';
+import { HEROES } from '../mock-heroes';
 
 // @Component is a decorator function that specifies the Angular 
 // metadata for the component.
@@ -11,15 +12,22 @@ import { Hero } from '../shared/hero';
   templateUrl: './heroes.component.html',
 
   // the location of the component's private CSS styles.
+  // "Styles and stylesheets identified in @Component metadata are scoped
+  // to that specific component. The heroes.component.css styles apply only
+  // to the HeroesComponent and don't affect the outer HTML or the HTML in 
+  // any other component."
   styleUrls: ['./heroes.component.scss']
 })
 // Always export the component class so you can import it elsewhere ... like in the AppModule.
 export class HeroesComponent implements OnInit {
 
-  public hero: Hero = {
-    id: 1,
-    name: 'Wonder woman'
-  };
+  heroes = HEROES;
+
+  public selectedHero: Hero;
+  // = {
+  //   id: 1,
+  //   name: 'Wonder woman'
+  // };
 
   constructor() { }
 
@@ -45,6 +53,9 @@ export class HeroesComponent implements OnInit {
     // leaks if you neglect to do so.
   }
 
+  onSelect(hero: Hero) {
+    this.selectedHero = hero;
+  }
 }
 
 
