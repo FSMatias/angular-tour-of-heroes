@@ -24,10 +24,6 @@ export class HeroesComponent implements OnInit {
   heroes = HEROES;
 
   public selectedHero: Hero;
-  // = {
-  //   id: 1,
-  //   name: 'Wonder woman'
-  // };
 
   constructor() { }
 
