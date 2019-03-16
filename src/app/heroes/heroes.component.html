@@ -1,16 +1,9 @@
 <h2> My Heroes </h2>
 <ul class="heroes">
   <!-- (click): Click event binding -->
-  <li *ngFor="let hero of heroes" (click)="onSelect(hero)" [class.selected]="hero=== selectedHero">
-    <!-- [class.some-css-class] => Angular class binding. 
-    Used to easily add/remove CSS class conditionally
-    -->
-    <span class="badge">{{hero.id}}</span>{{hero.name}}
+  <li *ngFor="let hero of heroes">
+    <a routerLink="/detail/{{hero.id}}">
+      <span class="badge">{{hero.id}}</span>{{hero.name}}
+    </a>
   </li>
 </ul>
-
-<!-- Property binding:
-  [hero]="selectedHero" is a "one way data binding from the selectedHero
-  property of the HeroesComponent to the hero property of the target element"
--->
-<app-hero-detail [hero]="selectedHero"></app-hero-detail>
