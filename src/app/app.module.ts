@@ -14,6 +14,7 @@ import { HttpClientModule } from '@angular/common/http';
 // applying them to an in-memory data store, and returning simulated responses.
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDataService } from './in-memory-data.service';
+import { HeroSearchComponent } from './hero-search/hero-search.component';
 
 /*  Angular needs to know how the pieces of your application fit together and
  * what other files and libraries the app requires. This information is called
@@ -32,7 +33,8 @@ import { InMemoryDataService } from './in-memory-data.service';
     HeroesComponent,
     HeroDetailComponent,
     MessagesComponent,
-    DashboardComponent
+    DashboardComponent,
+    HeroSearchComponent
   ],
   imports: [
     BrowserModule,
