@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Hero } from './shared/hero';
-import { HEROES } from './mock-heroes';
 import { Observable, of } from 'rxjs';
 import { MessageService } from './message.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { catchError, map, tap } from 'rxjs/operators';
 
 // The @Injectable() decorator marks the class as one that 
 // participates in the dependency injection system. 
@@ -25,33 +26,76 @@ import { MessageService } from './message.service';
   providedIn: 'root'
 })
 export class HeroService {
-/*
- * "Why services?
- * Components shouldn't fetch or save data directly and they certainly shouldn't
- * knowingly present fake data. They should focus on presenting data and delegate 
- * data access to a service."
- * 
- * HeroService is a service that all application classes can use to get heroes.
- * Instead of creating that service with new, we used the Angular 
- * dependency injection to inject it into the HeroesComponent constructor.
- * 
- * "Removing data access from components means you can change your mind about 
- * the implementation anytime, without touching any components. They don't know 
- * how the service works."
- */
-  constructor(private messageService: MessageService) { }
+  /*
+   * "Why services?
+   * Components shouldn't fetch or save data directly and they certainly shouldn't
+   * knowingly present fake data. They should focus on presenting data and delegate 
+   * data access to a service."
+   * 
+   * HeroService is a service that all application classes can use to get heroes.
+   * Instead of creating that service with new, we used the Angular 
+   * dependency injection to inject it into the HeroesComponent constructor.
+   * 
+   * "Removing data access from components means you can change your mind about 
+   * the implementation anytime, without touching any components. They don't know 
+   * how the service works."
+   */
+  constructor(
+    private messageService: MessageService,
+    private http: HttpClient) { }
+
+  private heroesUrl = 'api/heroes';  // URL to web api
 
   getHeroes(): Observable<Hero[]> {
     // Observables are used for asynchronous code. 
     // For now, getHeroes is still returning a mocked data but later, we will make a http request to get the heroes list.
     // of(HEROES) returns an Observable<Hero[]> that emits a single value, the array of mock heroes.
-    
-    this.messageService.add('HeroService: fetched heroes');
-    return of(HEROES);
+
+    // "Applying the optional type specifier, <Hero[]> , gives you a typed result object."
+    // "To catch errors, you "pipe" the observable result from http.get() through an RxJS catchError() operator."
+    // "The catchError() operator intercepts an Observable that failed. It passes the error an error handler that can do what it wants with the error."
+    return this.http.get<Hero[]>(this.heroesUrl)
+      .pipe(
+        /*
+         *  tap
+         *  The tap operator looks at the observable values, does something with those values, 
+         *  and passes them along. The tap call back doesn't touch the values themselves.
+         */
+        tap(_ => this.log('fetched heroes')),
+        catchError(this.handleError<Hero[]>('getHeroes', [])));
   }
 
+  /** GET hero by id. Will 404 if id not found */
   getHero(id: number): Observable<Hero> {
-    this.messageService.add(`HeroService: fetched hero id=${id}`);
-    return of(HEROES.find(hero => hero.id === id));
+    const url = `${this.heroesUrl}/${id}`;
+    return this.http.get<Hero>(url).pipe(
+      tap(_=> this.log(`fetched hero id=${id}`)),
+      catchError(this.handleError<Hero>(`getHero id=${id}`))
+    )
+  }
+
+  /** Log a HeroService message with the MessageService */
+  private log(message: string) {
+    this.messageService.add(`HeroService: ${message}`)
+  }
+
+  /**
+ * Handle Http operation that failed.
+ * Let the app continue.
+ * @param operation - name of the operation that failed
+ * @param result - optional value to return as the observable result
+ */
+  private handleError<T>(operation = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+
+      // TODO: send the error to remote logging infrastructure
+      console.error(error); // log to console instead
+
+      // TODO: better job of transforming error for user consumption
+      this.log(`${operation} failed: ${error.message}`);
+
+      // Let the app keep running by returning an empty result.
+      return of(result as T);
+    };
   }
 }
